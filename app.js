@@ -1,5 +1,5 @@
 const products=[
-{id:1,name:"Pink Coastal Dream",cat:"mobile",price:29,tag:"Mobile • Vertical",image:"images/pink-coastal-dream.jpg",c1:"#f6a7d5",c2:"#6b86c9"},
+{id:1,name:"Pink Coastal Dream",cat:"mobile",price:29,tag:"Mobile • Vertical",image:"IMG_3979.JPG",c1:"#f6a7d5",c2:"#6b86c9"},
 {id:2,name:"Cyber Warrior",cat:"gaming",price:49,tag:"4K • PC / Mobile",c1:"#bd7cff",c2:"#21103a"},
 {id:3,name:"Purple Dream",cat:"mobile",price:39,tag:"4K • Mobile",c1:"#e4a4ff",c2:"#32165b"},
 {id:4,name:"Anime Night",cat:"anime",price:49,tag:"4K • PC / Mobile",c1:"#7bd6ff",c2:"#101d3a"},
