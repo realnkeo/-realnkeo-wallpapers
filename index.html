@@ -1,16 +1,161 @@
-<!doctype html>
-<html lang="en"><head>
-<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>REALNKEO — Premium Wallpapers</title>
-<meta name="description" content="Premium 4K wallpapers by REALNKEO.">
-<link rel="stylesheet" href="style.css">
-<script src="https://checkout.razorpay.com/v1/checkout.js"></script>
-</head><body>
-<header><a class="brand" href="#">REAL<span>NKEO</span></a><nav><a href="#shop">Shop</a><a href="#categories">Categories</a><a href="#about">About</a></nav><button class="cart" onclick="openCart()">Cart <b id="count">0</b></button></header>
-<section class="hero"><div><p class="kicker">REALNKEO DIGITAL STORE</p><h1>Premium wallpapers.<br><em>Made to stand out.</em></h1><p>4K gaming, anime, aesthetic and mobile wallpapers for your setup.</p><a class="cta" href="#shop">Shop wallpapers →</a></div><div class="hero-card"><div class="hero-art"><span>4K</span><strong>REALNKEO</strong><small>PREMIUM COLLECTION</small></div></div></section>
-<section id="shop" class="section"><div class="head"><div><p class="kicker">SHOP</p><h2>Featured collection</h2></div><select id="filter" onchange="render()"><option value="all">All wallpapers</option><option value="gaming">Gaming</option><option value="anime">Anime</option><option value="nature">Nature</option><option value="mobile">Mobile</option></select></div><div id="products" class="products"></div></section>
-<section id="categories" class="section dark"><p class="kicker">CATEGORIES</p><h2>Find your style</h2><div class="cats"><button onclick="pick('gaming')">🎮 Gaming</button><button onclick="pick('anime')">✨ Anime</button><button onclick="pick('nature')">🌌 Nature</button><button onclick="pick('mobile')">📱 Mobile</button></div></section>
-<section id="about" class="about"><div><p class="kicker">ABOUT</p><h2>Built for creators & gamers.</h2></div><p>REALNKEO is a digital wallpaper store. Replace the demo artwork with your own wallpapers and start selling downloadable packs.</p></section>
-<footer><b>REALNKEO</b><span>© 2026 REALNKEO Wallpapers</span></footer>
-<div id="modal" class="overlay hidden"><div class="modal"><button class="x" onclick="closeCart()">×</button><h2>Your cart</h2><div id="items"></div><div class="total"><span>Total</span><b id="total">₹0</b></div><input id="email" type="email" placeholder="Customer email" autocomplete="email"><button class="pay" onclick="pay()">Pay securely</button><small>Payments are processed through Razorpay. Paid files should be delivered only after server-side payment verification.</small></div></div>
-<script src="app.js"></script></body></html>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <title>REALNKEO Wallpapers — Free HD & 4K Wallpapers</title>
+
+  <meta name="description" content="Download free HD and 4K wallpapers for mobile, PC, gaming, anime and nature.">
+
+  <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+  <!-- HEADER -->
+  <header class="header">
+    <div class="logo">REALNKEO</div>
+
+    <nav>
+      <a href="#home">Home</a>
+      <a href="#wallpapers">Wallpapers</a>
+      <a href="#categories">Categories</a>
+    </nav>
+  </header>
+
+
+  <!-- HERO -->
+  <section class="hero" id="home">
+
+    <div class="hero-content">
+
+      <div class="badge">
+        ✨ 100% FREE WALLPAPERS
+      </div>
+
+      <h1>
+        Beautiful Wallpapers.<br>
+        <span>Absolutely Free.</span>
+      </h1>
+
+      <p>
+        Download HD and 4K wallpapers for your phone, PC and gaming setup.
+      </p>
+
+      <a href="#wallpapers" class="hero-button">
+        Explore Wallpapers
+      </a>
+
+    </div>
+
+  </section>
+
+
+  <!-- AD SPACE -->
+  <div class="ad-box">
+    <span>ADVERTISEMENT</span>
+  </div>
+
+
+  <!-- CATEGORIES -->
+  <section class="categories" id="categories">
+
+    <h2>Browse Categories</h2>
+
+    <div class="category-buttons">
+
+      <button onclick="filterWallpapers('all')">
+        All
+      </button>
+
+      <button onclick="filterWallpapers('mobile')">
+        📱 Mobile
+      </button>
+
+      <button onclick="filterWallpapers('gaming')">
+        🎮 Gaming
+      </button>
+
+      <button onclick="filterWallpapers('anime')">
+        🌸 Anime
+      </button>
+
+      <button onclick="filterWallpapers('nature')">
+        🌿 Nature
+      </button>
+
+    </div>
+
+  </section>
+
+
+  <!-- WALLPAPERS -->
+  <section class="wallpapers" id="wallpapers">
+
+    <div class="section-title">
+
+      <div>
+        <h2>Latest Wallpapers</h2>
+        <p>Free wallpapers for everyone.</p>
+      </div>
+
+      <select id="filter" onchange="filterWallpapers(this.value)">
+        <option value="all">All Wallpapers</option>
+        <option value="mobile">Mobile</option>
+        <option value="gaming">Gaming</option>
+        <option value="anime">Anime</option>
+        <option value="nature">Nature</option>
+      </select>
+
+    </div>
+
+
+    <!-- PRODUCTS -->
+    <div id="products" class="grid"></div>
+
+  </section>
+
+
+  <!-- AD SPACE -->
+  <div class="ad-box large-ad">
+    <span>ADVERTISEMENT</span>
+  </div>
+
+
+  <!-- ABOUT -->
+  <section class="about">
+
+    <h2>About REALNKEO</h2>
+
+    <p>
+      REALNKEO is a free wallpaper platform where you can discover
+      beautiful wallpapers for mobile phones, PCs and gaming setups.
+      All wallpapers available here are free to download.
+    </p>
+
+  </section>
+
+
+  <!-- FOOTER -->
+  <footer>
+
+    <div class="footer-logo">
+      REALNKEO
+    </div>
+
+    <p>
+      Free wallpapers for everyone.
+    </p>
+
+    <p class="copyright">
+      © 2026 REALNKEO. All rights reserved.
+    </p>
+
+  </footer>
+
+
+  <script src="app.js"></script>
+
+</body>
+</html>
