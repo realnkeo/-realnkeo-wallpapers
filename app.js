@@ -83,21 +83,93 @@ const wallpapers = [
 ];
 
 
-function renderWallpapers(category = "all") {
+let currentCategory = "all";
 
-  const container = document.getElementById("products");
 
-  const list =
-    category === "all"
-      ? wallpapers
-      : wallpapers.filter(
-          wallpaper => wallpaper.category === category
-        );
+function renderWallpapers() {
 
+  const container =
+    document.getElementById("products");
+
+  const searchInput =
+    document.getElementById("search");
+
+  const noResults =
+    document.getElementById("noResults");
+
+  const searchText =
+    searchInput.value
+      .trim()
+      .toLowerCase();
+
+
+  let list = wallpapers;
+
+
+  /* CATEGORY FILTER */
+
+  if (currentCategory !== "all") {
+
+    list = list.filter(
+      wallpaper =>
+        wallpaper.category === currentCategory
+    );
+
+  }
+
+
+  /* SEARCH FILTER */
+
+  if (searchText !== "") {
+
+    list = list.filter(
+      wallpaper =>
+
+        wallpaper.name
+          .toLowerCase()
+          .includes(searchText)
+
+        ||
+
+        wallpaper.category
+          .toLowerCase()
+          .includes(searchText)
+
+        ||
+
+        wallpaper.tag
+          .toLowerCase()
+          .includes(searchText)
+
+    );
+
+  }
+
+
+  /* NO RESULTS */
+
+  if (list.length === 0) {
+
+    container.innerHTML = "";
+
+    noResults.style.display = "block";
+
+    return;
+
+  }
+
+
+  noResults.style.display = "none";
+
+
+  /* CREATE CARDS */
 
   container.innerHTML = list.map(wallpaper => {
 
-    let visual = "";
+    let visual;
+
+
+    /* REAL IMAGE */
 
     if (wallpaper.image) {
 
@@ -105,15 +177,22 @@ function renderWallpapers(category = "all") {
         <div
           class="image"
           style="
-            background-image:url('${wallpaper.image}');
+            background-image:
+              url('${wallpaper.image}');
           "
         ></div>
       `;
 
-    } else {
+    }
+
+
+    /* PLACEHOLDER */
+
+    else {
 
       visual = `
         <div class="image">
+
           <div
             class="image-placeholder"
             style="
@@ -121,17 +200,26 @@ function renderWallpapers(category = "all") {
               --c2:${wallpaper.c2};
             "
           >
+
             ${wallpaper.name}
+
           </div>
+
         </div>
       `;
 
     }
 
 
-    const downloadButton = wallpaper.image
+    /* DOWNLOAD */
 
-      ? `
+    const downloadButton =
+
+      wallpaper.image
+
+      ?
+
+      `
         <a
           href="${wallpaper.image}"
           download
@@ -146,7 +234,9 @@ function renderWallpapers(category = "all") {
         </a>
       `
 
-      : `
+      :
+
+      `
         <button
           class="download"
           onclick="comingSoon()"
@@ -185,14 +275,30 @@ function renderWallpapers(category = "all") {
 }
 
 
+/* CATEGORY */
+
 function filterWallpapers(category) {
 
-  document.getElementById("filter").value = category;
+  currentCategory = category;
 
-  renderWallpapers(category);
+  document.getElementById("filter").value =
+    category;
+
+  renderWallpapers();
 
 }
 
+
+/* SEARCH */
+
+function searchWallpapers() {
+
+  renderWallpapers();
+
+}
+
+
+/* PLACEHOLDER */
 
 function comingSoon() {
 
@@ -202,5 +308,7 @@ function comingSoon() {
 
 }
 
+
+/* START */
 
 renderWallpapers();
