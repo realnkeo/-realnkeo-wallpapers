@@ -1,1 +1,84 @@
-<!doctype html><html><head><meta name="viewport" content="width=device-width,initial-scale=1"><title>Thank you — REALNKEO</title><link rel="stylesheet" href="style.css"></head><body><div style="min-height:100vh;display:grid;place-items:center;text-align:center;padding:30px"><div><p class="kicker">PAYMENT VERIFIED</p><h1>Thank you for your purchase.</h1><p style="color:#aaa">This demo currently sends you here after verification. Connect your storage/database and replace the download URL with a secure, expiring download link.</p><a class="cta" href="index.html">Back to store</a></div></div></body></html>
+<!doctype html>
+<html>
+<head>
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Thank you — REALNKEO</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+<div style="
+  min-height:100vh;
+  display:grid;
+  place-items:center;
+  text-align:center;
+  padding:30px
+">
+
+  <div>
+
+    <p class="kicker">PAYMENT VERIFIED</p>
+
+    <h1>Thank you for your purchase.</h1>
+
+    <p style="color:#aaa">
+      Your payment was successfully verified.
+    </p>
+
+    <a id="downloadBtn"
+       class="cta"
+       style="display:none"
+       href="#">
+       Download Wallpaper
+    </a>
+
+    <p id="message"
+       style="color:#888;margin-top:20px">
+       Preparing your secure download...
+    </p>
+
+    <br>
+
+    <a class="cta" href="index.html">
+      Back to store
+    </a>
+
+  </div>
+
+</div>
+
+<script>
+
+const params = new URLSearchParams(
+  window.location.search
+);
+
+const download =
+  params.get("download");
+
+const btn =
+  document.getElementById("downloadBtn");
+
+const message =
+  document.getElementById("message");
+
+if (download) {
+
+  btn.href = download;
+  btn.style.display = "inline-block";
+
+  message.textContent =
+    "Your secure download is ready. The link expires in 10 minutes.";
+
+} else {
+
+  message.textContent =
+    "Download link was not found.";
+
+}
+
+</script>
+
+</body>
+</html>
