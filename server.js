@@ -249,20 +249,8 @@ app.get("/api/download/:token", (req, res) => {
 });
 
 // -------------------------
-// BLOCK DIRECT IMAGE ACCESS
-// -------------------------
-
-app.get("/IMG_3979.JPG", (req, res) => {
-  res.status(403).send(`
-    <h2>Access denied</h2>
-    <p>This wallpaper is available only after purchase.</p>
-  `);
-});
-
-// -------------------------
 // STATIC WEBSITE
 // -------------------------
-
 app.use(express.static(__dirname));
 
 app.listen(
