@@ -8,52 +8,22 @@ const app = express();
 
 app.use(express.json());
 
-// -------------------------
-// PRODUCTS
-// -------------------------
+// ==================================================
+// PREMIUM PRODUCTS
+// ==================================================
+
 const catalog = {
-  1: {
-    name: "Pink Coastal Dream",
+  10: {
+    name: "Purple Princess Premium",
     price: 29,
-    file: "IMG_3979 2.JPG"
-  },
-  2: {
-    name: "Cyber Warrior",
-    price: 49
-  },
-  3: {
-    name: "Purple Dream",
-    price: 39
-  },
-  4: {
-    name: "Anime Night",
-    price: 49
-  },
-  5: {
-    name: "Moon Forest",
-    price: 29
-  },
-  6: {
-    name: "Neon Battle",
-    price: 59
-  },
-  7: {
-    name: "Sakura Sky",
-    price: 39
-  },
-  8: {
-    name: "Cosmic Earth",
-    price: 49
-  },
-  9: {
-    name: "Dark Gaming Pack",
-    price: 99
+    file: "IMG_4285.JPG"
   }
 };
 
-// -------------------------
+// ==================================================
 // RAZORPAY
-// -------------------------
+// ==================================================
+
 const razorpay =
   process.env.RAZORPAY_KEY_ID &&
   process.env.RAZORPAY_KEY_SECRET
@@ -63,9 +33,10 @@ const razorpay =
       })
     : null;
 
-// -------------------------
+// ==================================================
 // SUPABASE
-// -------------------------
+// ==================================================
+
 const supabase =
   process.env.SUPABASE_URL &&
   process.env.SUPABASE_SERVICE_ROLE_KEY
@@ -81,15 +52,17 @@ const supabase =
       )
     : null;
 
-// -------------------------
+// ==================================================
 // TEMPORARY STORAGE
-// -------------------------
+// ==================================================
+
 const orders = new Map();
 const downloads = new Map();
 
-// -------------------------
-// CREATE ORDER
-// -------------------------
+// ==================================================
+// CREATE RAZORPAY ORDER
+// ==================================================
+
 app.post("/api/create-order", async (req, res) => {
   try {
     if (!razorpay) {
@@ -114,14 +87,15 @@ app.post("/api/create-order", async (req, res) => {
 
     if (!products.length) {
       return res.status(400).json({
-        error: "Invalid cart"
+        error: "Invalid premium product"
       });
     }
 
     const amount =
-      products.reduce((sum, product) => {
-        return sum + product.price;
-      }, 0) * 100;
+      products.reduce(
+        (sum, product) => sum + product.price,
+        0
+      ) * 100;
 
     const order = await razorpay.orders.create({
       amount,
@@ -139,24 +113,26 @@ app.post("/api/create-order", async (req, res) => {
       createdAt: Date.now()
     });
 
-    res.json({
+    return res.json({
       id: order.id,
       amount: order.amount,
+      currency: "INR",
       key: process.env.RAZORPAY_KEY_ID
     });
 
-  } catch (e) {
-    console.error("Create order error:", e);
+  } catch (error) {
+    console.error("Create order error:", error);
 
-    res.status(500).json({
-      error: e.message
+    return res.status(500).json({
+      error: "Unable to create payment order"
     });
   }
 });
 
-// -------------------------
+// ==================================================
 // VERIFY PAYMENT
-// -------------------------
+// ==================================================
+
 app.post("/api/verify-payment", async (req, res) => {
   try {
     if (!razorpay || !supabase) {
@@ -172,25 +148,38 @@ app.post("/api/verify-payment", async (req, res) => {
       razorpay_signature
     } = req.body;
 
-    const savedOrder = orders.get(razorpay_order_id);
+    if (
+      !razorpay_order_id ||
+      !razorpay_payment_id ||
+      !razorpay_signature
+    ) {
+      return res.status(400).json({
+        success: false,
+        error: "Missing payment details"
+      });
+    }
+
+    const savedOrder = orders.get(
+      razorpay_order_id
+    );
 
     if (!savedOrder) {
       return res.status(400).json({
         success: false,
-        error: "Order not found"
+        error: "Order not found or expired"
       });
     }
 
-    // -------------------------
-    // VERIFY SIGNATURE
-    // -------------------------
+    // ----------------------------------------------
+    // VERIFY RAZORPAY SIGNATURE
+    // ----------------------------------------------
 
     const body =
       razorpay_order_id +
       "|" +
       razorpay_payment_id;
 
-    const expected = crypto
+    const expectedSignature = crypto
       .createHmac(
         "sha256",
         process.env.RAZORPAY_KEY_SECRET
@@ -198,12 +187,18 @@ app.post("/api/verify-payment", async (req, res) => {
       .update(body)
       .digest("hex");
 
+    const expectedBuffer =
+      Buffer.from(expectedSignature);
+
+    const receivedBuffer =
+      Buffer.from(razorpay_signature);
+
     if (
-      !razorpay_signature ||
-      expected.length !== razorpay_signature.length ||
+      expectedBuffer.length !==
+        receivedBuffer.length ||
       !crypto.timingSafeEqual(
-        Buffer.from(expected),
-        Buffer.from(razorpay_signature)
+        expectedBuffer,
+        receivedBuffer
       )
     ) {
       return res.status(400).json({
@@ -212,15 +207,18 @@ app.post("/api/verify-payment", async (req, res) => {
       });
     }
 
-    // -------------------------
-    // VERIFY RAZORPAY ORDER
-    // -------------------------
+    // ----------------------------------------------
+    // VERIFY ORDER
+    // ----------------------------------------------
 
     const razorpayOrder =
-      await razorpay.orders.fetch(razorpay_order_id);
+      await razorpay.orders.fetch(
+        razorpay_order_id
+      );
 
     if (
-      razorpayOrder.amount !== savedOrder.amount ||
+      razorpayOrder.amount !==
+        savedOrder.amount ||
       razorpayOrder.currency !== "INR"
     ) {
       return res.status(400).json({
@@ -229,9 +227,9 @@ app.post("/api/verify-payment", async (req, res) => {
       });
     }
 
-    // -------------------------
+    // ----------------------------------------------
     // VERIFY PAYMENT
-    // -------------------------
+    // ----------------------------------------------
 
     const payment =
       await razorpay.payments.fetch(
@@ -239,7 +237,8 @@ app.post("/api/verify-payment", async (req, res) => {
       );
 
     if (
-      payment.order_id !== razorpay_order_id ||
+      payment.order_id !==
+        razorpay_order_id ||
       payment.status !== "captured"
     ) {
       return res.status(400).json({
@@ -248,26 +247,26 @@ app.post("/api/verify-payment", async (req, res) => {
       });
     }
 
-    // -------------------------
-    // DOWNLOAD FILE
-    // -------------------------
+    // ----------------------------------------------
+    // GET PREMIUM PRODUCT
+    // ----------------------------------------------
 
-    const firstProductId =
+    const productId =
       savedOrder.items[0];
 
     const product =
-      catalog[firstProductId];
+      catalog[productId];
 
     if (!product || !product.file) {
       return res.status(400).json({
         success: false,
-        error: "Download file not available"
+        error: "Premium file not available"
       });
     }
 
-    // -------------------------
-    // CREATE DOWNLOAD TOKEN
-    // -------------------------
+    // ----------------------------------------------
+    // CREATE ONE-TIME DOWNLOAD TOKEN
+    // ----------------------------------------------
 
     const token = crypto
       .randomBytes(32)
@@ -275,135 +274,195 @@ app.post("/api/verify-payment", async (req, res) => {
 
     downloads.set(token, {
       file: product.file,
-      expiresAt: Date.now() + 10 * 60 * 1000
+      expiresAt:
+        Date.now() + 10 * 60 * 1000
     });
 
-    // Order is no longer needed
+    // Remove order after successful payment
     orders.delete(razorpay_order_id);
 
-    res.json({
+    return res.json({
       success: true,
       downloadUrl:
         "/api/download/" + token
     });
 
-  } catch (e) {
-    console.error("Verify payment error:", e);
+  } catch (error) {
+    console.error(
+      "Verify payment error:",
+      error
+    );
 
-    res.status(500).json({
+    return res.status(500).json({
       success: false,
-      error: e.message
+      error: "Payment verification failed"
     });
   }
 });
 
-// -------------------------
+// ==================================================
 // SECURE DOWNLOAD
-// -------------------------
-app.get("/api/download/:token", async (req, res) => {
-  try {
-    if (!supabase) {
-      return res.status(503).send(
-        "Supabase is not configured."
-      );
-    }
+// ==================================================
 
-    const token = req.params.token;
+app.get(
+  "/api/download/:token",
+  async (req, res) => {
+    try {
+      if (!supabase) {
+        return res
+          .status(503)
+          .send("Supabase is not configured.");
+      }
 
-    const data = downloads.get(token);
+      const token =
+        req.params.token;
 
-    if (!data) {
-      return res.status(404).send(`
-        <html>
-          <body style="font-family:Arial;text-align:center;padding:50px">
-            <h2>Download link expired or invalid.</h2>
-            <p>Please contact REALNKEO support.</p>
-          </body>
-        </html>
-      `);
-    }
+      const download =
+        downloads.get(token);
 
-    // Check token expiry
-    if (Date.now() > data.expiresAt) {
+      if (!download) {
+        return res.status(404).send(`
+          <html>
+            <body style="
+              font-family:Arial;
+              text-align:center;
+              padding:50px
+            ">
+              <h2>
+                Download link expired or invalid.
+              </h2>
+              <p>
+                Please contact REALNKEO support.
+              </p>
+            </body>
+          </html>
+        `);
+      }
+
+      // --------------------------------------------
+      // CHECK EXPIRY
+      // --------------------------------------------
+
+      if (
+        Date.now() >
+        download.expiresAt
+      ) {
+        downloads.delete(token);
+
+        return res.status(410).send(`
+          <html>
+            <body style="
+              font-family:Arial;
+              text-align:center;
+              padding:50px
+            ">
+              <h2>
+                Download link expired.
+              </h2>
+              <p>
+                Please contact REALNKEO support.
+              </p>
+            </body>
+          </html>
+        `);
+      }
+
+      // --------------------------------------------
+      // CREATE TEMPORARY SUPABASE URL
+      // --------------------------------------------
+
+      const {
+        data: signed,
+        error
+      } = await supabase.storage
+        .from("Wallpapers")
+        .createSignedUrl(
+          download.file,
+          600,
+          {
+            download: true
+          }
+        );
+
+      if (
+        error ||
+        !signed ||
+        !signed.signedUrl
+      ) {
+        console.error(
+          "Supabase download error:",
+          error
+        );
+
+        return res.status(500).send(`
+          <html>
+            <body style="
+              font-family:Arial;
+              text-align:center;
+              padding:50px
+            ">
+              <h2>
+                Unable to create download link.
+              </h2>
+              <p>
+                Please try again.
+              </p>
+            </body>
+          </html>
+        `);
+      }
+
+      // One-time token
       downloads.delete(token);
 
-      return res.status(410).send(`
-        <html>
-          <body style="font-family:Arial;text-align:center;padding:50px">
-            <h2>Download link expired.</h2>
-            <p>Please contact REALNKEO support.</p>
-          </body>
-        </html>
-      `);
-    }
-
-    // -------------------------
-    // CREATE SUPABASE SIGNED URL
-    // -------------------------
-
-    const {
-      data: signed,
-      error
-    } = await supabase.storage
-      .from("Wallpapers")
-      .createSignedUrl(
-        data.file,
-        600,
-        {
-          download: true
-        }
+      // Redirect to temporary signed URL
+      return res.redirect(
+        signed.signedUrl
       );
 
-    // IMPORTANT:
-    // Do NOT delete the token before
-    // Supabase successfully creates the URL.
-    if (error || !signed?.signedUrl) {
+    } catch (error) {
       console.error(
-        "Supabase download error:",
+        "Download error:",
         error
       );
 
       return res.status(500).send(`
         <html>
-          <body style="font-family:Arial;text-align:center;padding:50px">
-            <h2>Unable to create download link.</h2>
-            <p>Please try again.</p>
+          <body style="
+            font-family:Arial;
+            text-align:center;
+            padding:50px
+          ">
+            <h2>
+              Download error.
+            </h2>
+            <p>
+              Please try again.
+            </p>
           </body>
         </html>
       `);
     }
-
-    // Delete token only AFTER successful URL creation
-    downloads.delete(token);
-
-    // Redirect to temporary Supabase URL
-    res.redirect(signed.signedUrl);
-
-  } catch (e) {
-    console.error("Download error:", e);
-
-    res.status(500).send(`
-      <html>
-        <body style="font-family:Arial;text-align:center;padding:50px">
-          <h2>Download error.</h2>
-          <p>Please try again.</p>
-        </body>
-      </html>
-    `);
   }
-});
+);
 
-// -------------------------
+// ==================================================
 // STATIC WEBSITE
-// -------------------------
-app.use(express.static(__dirname));
+// ==================================================
 
-// -------------------------
+app.use(
+  express.static(__dirname)
+);
+
+// ==================================================
 // START SERVER
-// -------------------------
+// ==================================================
+
 app.listen(
   process.env.PORT || 3000,
   () => {
-    console.log("REALNKEO store running");
+    console.log(
+      "REALNKEO store running"
+    );
   }
 );
