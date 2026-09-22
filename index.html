@@ -6,7 +6,10 @@
 
   <title>REALNKEO Wallpapers — Free HD & 4K Wallpapers</title>
 
-  <meta name="description" content="Download free HD and 4K wallpapers for mobile, PC, gaming, anime and nature.">
+  <meta
+    name="description"
+    content="Download free HD and 4K wallpapers for mobile, PC, gaming, anime and nature."
+  >
 
   <link rel="stylesheet" href="style.css">
 </head>
@@ -15,13 +18,17 @@
 
   <!-- HEADER -->
   <header class="header">
-    <div class="logo">REALNKEO</div>
+
+    <div class="logo">
+      REALNKEO
+    </div>
 
     <nav>
       <a href="#home">Home</a>
       <a href="#wallpapers">Wallpapers</a>
       <a href="#categories">Categories</a>
     </nav>
+
   </header>
 
 
@@ -52,7 +59,7 @@
   </section>
 
 
-  <!-- AD SPACE -->
+  <!-- AD -->
   <div class="ad-box">
     <span>ADVERTISEMENT</span>
   </div>
@@ -97,27 +104,82 @@
 
       <div>
         <h2>Latest Wallpapers</h2>
-        <p>Free wallpapers for everyone.</p>
+
+        <p>
+          Free wallpapers for everyone.
+        </p>
       </div>
 
-      <select id="filter" onchange="filterWallpapers(this.value)">
-        <option value="all">All Wallpapers</option>
-        <option value="mobile">Mobile</option>
-        <option value="gaming">Gaming</option>
-        <option value="anime">Anime</option>
-        <option value="nature">Nature</option>
+    </div>
+
+
+    <!-- SEARCH -->
+    <div class="search-area">
+
+      <input
+        type="search"
+        id="search"
+        placeholder="🔍 Search wallpapers..."
+        oninput="searchWallpapers()"
+      >
+
+      <select
+        id="filter"
+        onchange="filterWallpapers(this.value)"
+      >
+
+        <option value="all">
+          All Wallpapers
+        </option>
+
+        <option value="mobile">
+          Mobile
+        </option>
+
+        <option value="gaming">
+          Gaming
+        </option>
+
+        <option value="anime">
+          Anime
+        </option>
+
+        <option value="nature">
+          Nature
+        </option>
+
       </select>
 
     </div>
 
 
     <!-- PRODUCTS -->
-    <div id="products" class="grid"></div>
+    <div
+      id="products"
+      class="grid"
+    ></div>
+
+
+    <!-- NO RESULTS -->
+    <div
+      id="noResults"
+      style="display:none;text-align:center;padding:50px;color:#777;"
+    >
+
+      <h3>
+        No wallpapers found
+      </h3>
+
+      <p>
+        Try another search.
+      </p>
+
+    </div>
 
   </section>
 
 
-  <!-- AD SPACE -->
+  <!-- AD -->
   <div class="ad-box large-ad">
     <span>ADVERTISEMENT</span>
   </div>
@@ -126,7 +188,9 @@
   <!-- ABOUT -->
   <section class="about">
 
-    <h2>About REALNKEO</h2>
+    <h2>
+      About REALNKEO
+    </h2>
 
     <p>
       REALNKEO is a free wallpaper platform where you can discover
@@ -150,25 +214,48 @@
 
 
     <!-- FOOTER LINKS -->
-    <div style="margin-top:25px;display:flex;justify-content:center;gap:20px;flex-wrap:wrap;">
+    <div
+      style="
+        margin-top:25px;
+        display:flex;
+        justify-content:center;
+        gap:20px;
+        flex-wrap:wrap;
+      "
+    >
 
-      <a href="about.html" style="color:#aaa;text-decoration:none;">
+      <a
+        href="about.html"
+        style="color:#aaa;text-decoration:none;"
+      >
         About Us
       </a>
 
-      <a href="contact.html" style="color:#aaa;text-decoration:none;">
+      <a
+        href="contact.html"
+        style="color:#aaa;text-decoration:none;"
+      >
         Contact
       </a>
 
-      <a href="privacy.html" style="color:#aaa;text-decoration:none;">
+      <a
+        href="privacy.html"
+        style="color:#aaa;text-decoration:none;"
+      >
         Privacy Policy
       </a>
 
-      <a href="terms.html" style="color:#aaa;text-decoration:none;">
+      <a
+        href="terms.html"
+        style="color:#aaa;text-decoration:none;"
+      >
         Terms
       </a>
 
-      <a href="dmca.html" style="color:#aaa;text-decoration:none;">
+      <a
+        href="dmca.html"
+        style="color:#aaa;text-decoration:none;"
+      >
         Copyright / DMCA
       </a>
 
