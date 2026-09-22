@@ -81,7 +81,9 @@ const supabase =
       )
     : null;
 
-// Temporary storage
+// -------------------------
+// TEMPORARY STORAGE
+// -------------------------
 const orders = new Map();
 const downloads = new Map();
 
@@ -144,7 +146,7 @@ app.post("/api/create-order", async (req, res) => {
     });
 
   } catch (e) {
-    console.error(e);
+    console.error("Create order error:", e);
 
     res.status(500).json({
       error: e.message
@@ -247,7 +249,7 @@ app.post("/api/verify-payment", async (req, res) => {
     }
 
     // -------------------------
-    // DOWNLOAD TOKEN
+    // DOWNLOAD FILE
     // -------------------------
 
     const firstProductId =
@@ -263,6 +265,10 @@ app.post("/api/verify-payment", async (req, res) => {
       });
     }
 
+    // -------------------------
+    // CREATE DOWNLOAD TOKEN
+    // -------------------------
+
     const token = crypto
       .randomBytes(32)
       .toString("hex");
@@ -272,7 +278,7 @@ app.post("/api/verify-payment", async (req, res) => {
       expiresAt: Date.now() + 10 * 60 * 1000
     });
 
-    // Remove used order
+    // Order is no longer needed
     orders.delete(razorpay_order_id);
 
     res.json({
@@ -282,7 +288,7 @@ app.post("/api/verify-payment", async (req, res) => {
     });
 
   } catch (e) {
-    console.error(e);
+    console.error("Verify payment error:", e);
 
     res.status(500).json({
       success: false,
@@ -317,6 +323,7 @@ app.get("/api/download/:token", async (req, res) => {
       `);
     }
 
+    // Check token expiry
     if (Date.now() > data.expiresAt) {
       downloads.delete(token);
 
@@ -330,39 +337,58 @@ app.get("/api/download/:token", async (req, res) => {
       `);
     }
 
-    // One-time REALNKEO token
-    downloads.delete(token);
+    // -------------------------
+    // CREATE SUPABASE SIGNED URL
+    // -------------------------
 
-    // Create Supabase signed URL
-    const { data: signed, error } =
-      await supabase.storage
-        .from("Wallpapers")
-        .createSignedUrl(
-          data.file,
-          600,
-          {
-            download: true
-          }
-        );
+    const {
+      data: signed,
+      error
+    } = await supabase.storage
+      .from("Wallpapers")
+      .createSignedUrl(
+        data.file,
+        600,
+        {
+          download: true
+        }
+      );
 
+    // IMPORTANT:
+    // Do NOT delete the token before
+    // Supabase successfully creates the URL.
     if (error || !signed?.signedUrl) {
-      console.error(error);
+      console.error(
+        "Supabase download error:",
+        error
+      );
 
       return res.status(500).send(`
-        <h2>Unable to create download link.</h2>
-        <p>Please contact REALNKEO support.</p>
+        <html>
+          <body style="font-family:Arial;text-align:center;padding:50px">
+            <h2>Unable to create download link.</h2>
+            <p>Please try again.</p>
+          </body>
+        </html>
       `);
     }
 
-    // Send user to temporary Supabase download URL
+    // Delete token only AFTER successful URL creation
+    downloads.delete(token);
+
+    // Redirect to temporary Supabase URL
     res.redirect(signed.signedUrl);
 
   } catch (e) {
-    console.error(e);
+    console.error("Download error:", e);
 
     res.status(500).send(`
-      <h2>Download error.</h2>
-      <p>Please contact REALNKEO support.</p>
+      <html>
+        <body style="font-family:Arial;text-align:center;padding:50px">
+          <h2>Download error.</h2>
+          <p>Please try again.</p>
+        </body>
+      </html>
     `);
   }
 });
