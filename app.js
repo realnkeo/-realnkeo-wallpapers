@@ -1,143 +1,206 @@
-const products=[
-{id:1,name:"Pink Coastal Dream",cat:"mobile",price:29,tag:"Mobile • Vertical",image:"IMG_3979.JPG",c1:"#f6a7d5",c2:"#6b86c9"},
-{id:2,name:"Cyber Warrior",cat:"gaming",price:49,tag:"4K • PC / Mobile",c1:"#bd7cff",c2:"#21103a"},
-{id:3,name:"Purple Dream",cat:"mobile",price:39,tag:"4K • Mobile",c1:"#e4a4ff",c2:"#32165b"},
-{id:4,name:"Anime Night",cat:"anime",price:49,tag:"4K • PC / Mobile",c1:"#7bd6ff",c2:"#101d3a"},
-{id:5,name:"Moon Forest",cat:"nature",price:29,tag:"4K • Mobile",c1:"#8cffd0",c2:"#102f2a"},
-{id:6,name:"Neon Battle",cat:"gaming",price:59,tag:"8K • PC",c1:"#ff5bd8",c2:"#36102e"},
-{id:7,name:"Sakura Sky",cat:"anime",price:39,tag:"4K • Mobile",c1:"#ffb5e6",c2:"#3d1738"},
-{id:8,name:"Cosmic Earth",cat:"nature",price:49,tag:"4K • PC / Mobile",c1:"#70a7ff",c2:"#111b3c"},
-{id:9,name:"Dark Gaming Pack",cat:"gaming",price:99,tag:"10 Wallpapers",c1:"#ff6b6b",c2:"#331314"}];
+const wallpapers = [
 
-let cart=[];
+  {
+    id: 1,
+    name: "Pink Coastal Dream",
+    category: "mobile",
+    tag: "HD • Mobile",
+    image: "IMG_3979.JPG"
+  },
 
-function render(){
-  let f=document.querySelector("#filter").value;
-  let list=f==="all"?products:products.filter(p=>p.cat===f);
+  {
+    id: 2,
+    name: "Cyber Warrior",
+    category: "gaming",
+    tag: "4K • Gaming",
+    c1: "#bd7cff",
+    c2: "#21103a"
+  },
 
-  document.querySelector("#products").innerHTML=list.map(p=>`
-    <article class="product">
-      <div class="visual" style="--c1:${p.c1};--c2:${p.c2};${p.image?`background-image:url('${p.image}');background-size:cover;background-position:center;`:''}">
-        <b>${p.name}</b>
-      </div>
-      <div class="info">
-        <h3>${p.name}</h3>
-        <div class="meta">${p.tag}</div>
-        <div class="row">
-          <span class="price">₹${p.price}</span>
-          <button class="add" onclick="add(${p.id})">Add</button>
-        </div>
-      </div>
-    </article>
-  `).join("")
-}
+  {
+    id: 3,
+    name: "Purple Dream",
+    category: "mobile",
+    tag: "4K • Mobile",
+    c1: "#e4a4ff",
+    c2: "#32165b"
+  },
 
-function pick(v){
-  document.querySelector("#filter").value=v;
-  render();
-  document.querySelector("#shop").scrollIntoView({behavior:"smooth"})
-}
+  {
+    id: 4,
+    name: "Anime Night",
+    category: "anime",
+    tag: "4K • Anime",
+    c1: "#7bd6ff",
+    c2: "#101d3a"
+  },
 
-function add(id){
-  if(!cart.find(x=>x.id===id))
-    cart.push(products.find(x=>x.id===id));
+  {
+    id: 5,
+    name: "Moon Forest",
+    category: "nature",
+    tag: "4K • Nature",
+    c1: "#8cffd0",
+    c2: "#102f2a"
+  },
 
-  update();
-  openCart()
-}
+  {
+    id: 6,
+    name: "Neon Battle",
+    category: "gaming",
+    tag: "4K • Gaming",
+    c1: "#ff5bd8",
+    c2: "#36102e"
+  },
 
-function update(){
-  document.querySelector("#count").textContent=cart.length;
+  {
+    id: 7,
+    name: "Sakura Sky",
+    category: "anime",
+    tag: "4K • Anime",
+    c1: "#ffb5e6",
+    c2: "#3d1738"
+  },
 
-  document.querySelector("#items").innerHTML=cart.length
-    ?cart.map(p=>`
-      <div class="line">
-        <span>${p.name}</span>
-        <b>₹${p.price}</b>
-      </div>
-    `).join("")
-    :"<p style='color:#888'>Cart is empty.</p>";
+  {
+    id: 8,
+    name: "Cosmic Earth",
+    category: "nature",
+    tag: "4K • Nature",
+    c1: "#70a7ff",
+    c2: "#111b3c"
+  },
 
-  document.querySelector("#total").textContent=
-    "₹"+cart.reduce((a,p)=>a+p.price,0)
-}
-
-function openCart(){
-  document.querySelector("#modal").classList.remove("hidden");
-  update()
-}
-
-function closeCart(){
-  document.querySelector("#modal").classList.add("hidden")
-}
-
-async function pay(){
-
-  const email=document.querySelector("#email").value.trim();
-
-  if(!email||!email.includes("@"))
-    return alert("Please enter a valid email.");
-
-  if(!cart.length)
-    return alert("Your cart is empty.");
-
-  try{
-
-    const res=await fetch("/api/create-order",{
-      method:"POST",
-      headers:{"Content-Type":"application/json"},
-      body:JSON.stringify({
-        items:cart.map(p=>p.id),
-        email
-      })
-    });
-
-    const order=await res.json();
-
-    if(!res.ok)
-      throw new Error(order.error||"Order creation failed");
-
-    const rzp=new Razorpay({
-      key:order.key,
-      amount:order.amount,
-      currency:"INR",
-      name:"REALNKEO",
-      description:"Wallpaper purchase",
-      order_id:order.id,
-      prefill:{email},
-
-      handler:async function(resp){
-
-        const v=await fetch("/api/verify-payment",{
-          method:"POST",
-          headers:{"Content-Type":"application/json"},
-          body:JSON.stringify(resp)
-        });
-
-        const out=await v.json();
-
-        if(out.success){
-
-          window.location.href=
-            "/thank-you.html?download="+
-            encodeURIComponent(out.downloadUrl);
-
-        }else{
-
-          alert("Payment verification failed.");
-
-        }
-
-      }
-    });
-
-    rzp.open();
-
-  }catch(e){
-
-    alert("Payment setup is not connected yet. Add Razorpay keys to the server.");
-
+  {
+    id: 9,
+    name: "Dark Gaming",
+    category: "gaming",
+    tag: "HD • Gaming",
+    c1: "#ff6b6b",
+    c2: "#331314"
   }
+
+];
+
+
+function renderWallpapers(category = "all") {
+
+  const container = document.getElementById("products");
+
+  const list =
+    category === "all"
+      ? wallpapers
+      : wallpapers.filter(
+          wallpaper => wallpaper.category === category
+        );
+
+
+  container.innerHTML = list.map(wallpaper => {
+
+    let visual = "";
+
+    if (wallpaper.image) {
+
+      visual = `
+        <div
+          class="image"
+          style="
+            background-image:url('${wallpaper.image}');
+          "
+        ></div>
+      `;
+
+    } else {
+
+      visual = `
+        <div class="image">
+          <div
+            class="image-placeholder"
+            style="
+              --c1:${wallpaper.c1};
+              --c2:${wallpaper.c2};
+            "
+          >
+            ${wallpaper.name}
+          </div>
+        </div>
+      `;
+
+    }
+
+
+    const downloadButton = wallpaper.image
+
+      ? `
+        <a
+          href="${wallpaper.image}"
+          download
+          class="download"
+          style="
+            display:block;
+            text-align:center;
+            text-decoration:none;
+          "
+        >
+          Download Free
+        </a>
+      `
+
+      : `
+        <button
+          class="download"
+          onclick="comingSoon()"
+        >
+          Download Free
+        </button>
+      `;
+
+
+    return `
+
+      <article class="card">
+
+        ${visual}
+
+        <div class="card-content">
+
+          <h3>
+            ${wallpaper.name}
+          </h3>
+
+          <div class="meta">
+            ${wallpaper.tag}
+          </div>
+
+          ${downloadButton}
+
+        </div>
+
+      </article>
+
+    `;
+
+  }).join("");
+
 }
 
-render();
+
+function filterWallpapers(category) {
+
+  document.getElementById("filter").value = category;
+
+  renderWallpapers(category);
+
+}
+
+
+function comingSoon() {
+
+  alert(
+    "This wallpaper is coming soon. More free wallpapers will be added soon!"
+  );
+
+}
+
+
+renderWallpapers();
