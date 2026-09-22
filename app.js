@@ -101,163 +101,518 @@ const wallpapers = [
 
 let currentCategory = "all";
 
-function renderWallpapers() {
-  const container = document.getElementById("products");
-  const searchInput = document.getElementById("search");
-  const noResults = document.getElementById("noResults");
+// ==================================================
+// LOAD RAZORPAY CHECKOUT
+// ==================================================
 
-  const searchText = searchInput.value.trim().toLowerCase();
+function loadRazorpay() {
+  return new Promise((resolve, reject) => {
+
+    if (window.Razorpay) {
+      resolve();
+      return;
+    }
+
+    const script = document.createElement("script");
+
+    script.src = "https://checkout.razorpay.com/v1/checkout.js";
+
+    script.onload = () => resolve();
+
+    script.onerror = () => {
+      reject(
+        new Error("Unable to load Razorpay Checkout.")
+      );
+    };
+
+    document.head.appendChild(script);
+  });
+}
+
+
+// ==================================================
+// RENDER WALLPAPERS
+// ==================================================
+
+function renderWallpapers() {
+
+  const container =
+    document.getElementById("products");
+
+  const searchInput =
+    document.getElementById("search");
+
+  const noResults =
+    document.getElementById("noResults");
+
+  const searchText =
+    searchInput.value.trim().toLowerCase();
 
   let list = wallpapers;
 
   if (currentCategory !== "all") {
+
     list = list.filter(
-      wallpaper => wallpaper.category === currentCategory
+      wallpaper =>
+        wallpaper.category === currentCategory
     );
   }
 
   if (searchText !== "") {
+
     list = list.filter(
       wallpaper =>
-        wallpaper.name.toLowerCase().includes(searchText) ||
-        wallpaper.category.toLowerCase().includes(searchText) ||
-        wallpaper.tag.toLowerCase().includes(searchText)
+        wallpaper.name
+          .toLowerCase()
+          .includes(searchText) ||
+
+        wallpaper.category
+          .toLowerCase()
+          .includes(searchText) ||
+
+        wallpaper.tag
+          .toLowerCase()
+          .includes(searchText)
     );
   }
 
   if (list.length === 0) {
+
     container.innerHTML = "";
+
     noResults.style.display = "block";
+
     return;
   }
 
   noResults.style.display = "none";
 
-  container.innerHTML = list.map(wallpaper => {
-    let visual;
+  container.innerHTML =
+    list.map(wallpaper => {
 
-    if (wallpaper.image) {
-      visual = `
-        <div
-          class="image"
-          style="
-            background-image: url('${wallpaper.image}');
-            background-size: cover;
-            background-position: center;
-          "
-        ></div>
-      `;
-    } else {
-      visual = `
-        <div class="image">
+      let visual;
+
+      // --------------------------------------------
+      // IMAGE
+      // --------------------------------------------
+
+      if (wallpaper.image) {
+
+        visual = `
           <div
-            class="image-placeholder"
+            class="image"
             style="
-              --c1:${wallpaper.c1};
-              --c2:${wallpaper.c2};
+              background-image:url('${wallpaper.image}');
+              background-size:cover;
+              background-position:center;
+            "
+          ></div>
+        `;
+
+      } else {
+
+        visual = `
+          <div class="image">
+
+            <div
+              class="image-placeholder"
+              style="
+                --c1:${wallpaper.c1};
+                --c2:${wallpaper.c2};
+              "
+            >
+              ${wallpaper.name}
+            </div>
+
+          </div>
+        `;
+      }
+
+
+      // --------------------------------------------
+      // BUTTON
+      // --------------------------------------------
+
+      let actionButton;
+
+      if (wallpaper.type === "premium") {
+
+        actionButton = `
+          <button
+            class="download"
+            onclick="buyPremium(${wallpaper.id})"
+          >
+            💎 Buy ₹${wallpaper.price}
+          </button>
+        `;
+
+      } else if (wallpaper.image) {
+
+        actionButton = `
+          <a
+            href="${wallpaper.image}"
+            download
+            class="download"
+            style="
+              display:block;
+              text-align:center;
+              text-decoration:none;
             "
           >
-            ${wallpaper.name}
-          </div>
-        </div>
-      `;
-    }
+            Download Free
+          </a>
+        `;
 
-    let actionButton;
+      } else {
 
-    if (wallpaper.type === "premium") {
-      actionButton = `
-        <button
-          class="download"
-          onclick="premiumComingSoon()"
+        actionButton = `
+          <button
+            class="download"
+            onclick="comingSoon()"
+          >
+            Download Free
+          </button>
+        `;
+      }
+
+
+      // --------------------------------------------
+      // PREMIUM BADGE
+      // --------------------------------------------
+
+      const premiumBadge =
+        wallpaper.type === "premium"
+          ? `
+            <div
+              style="
+                position:absolute;
+                top:12px;
+                right:12px;
+                background:#8b5cf6;
+                color:white;
+                padding:6px 10px;
+                border-radius:20px;
+                font-size:12px;
+                font-weight:700;
+                z-index:2;
+              "
+            >
+              💎 PREMIUM
+            </div>
+          `
+          : "";
+
+
+      return `
+        <article
+          class="card"
+          style="position:relative;"
         >
-          💎 Buy ₹${wallpaper.price}
-        </button>
-      `;
-    } else if (wallpaper.image) {
-      actionButton = `
-        <a
-          href="${wallpaper.image}"
-          download
-          class="download"
-          style="
-            display:block;
-            text-align:center;
-            text-decoration:none;
-          "
-        >
-          Download Free
-        </a>
-      `;
-    } else {
-      actionButton = `
-        <button
-          class="download"
-          onclick="comingSoon()"
-        >
-          Download Free
-        </button>
-      `;
-    }
 
-    const premiumBadge =
-      wallpaper.type === "premium"
-        ? `<div style="
-            position:absolute;
-            top:12px;
-            right:12px;
-            background:#8b5cf6;
-            color:white;
-            padding:6px 10px;
-            border-radius:20px;
-            font-size:12px;
-            font-weight:700;
-            z-index:2;
-          ">💎 PREMIUM</div>`
-        : "";
+          ${premiumBadge}
 
-    return `
-      <article class="card" style="position:relative;">
-        ${premiumBadge}
+          ${visual}
 
-        ${visual}
+          <div class="card-content">
 
-        <div class="card-content">
-          <h3>${wallpaper.name}</h3>
+            <h3>
+              ${wallpaper.name}
+            </h3>
 
-          <div class="meta">
-            ${wallpaper.tag}
+            <div class="meta">
+              ${wallpaper.tag}
+            </div>
+
+            ${actionButton}
+
           </div>
 
-          ${actionButton}
-        </div>
-      </article>
-    `;
-  }).join("");
+        </article>
+      `;
+
+    }).join("");
 }
 
+
+// ==================================================
+// FILTER
+// ==================================================
+
 function filterWallpapers(category) {
+
   currentCategory = category;
 
-  document.getElementById("filter").value = category;
+  document.getElementById("filter").value =
+    category;
 
   renderWallpapers();
 }
+
+
+// ==================================================
+// SEARCH
+// ==================================================
 
 function searchWallpapers() {
   renderWallpapers();
 }
 
+
+// ==================================================
+// FREE DOWNLOAD COMING SOON
+// ==================================================
+
 function comingSoon() {
+
   alert(
     "This wallpaper is coming soon. More free wallpapers will be added soon!"
   );
 }
 
-function premiumComingSoon() {
-  alert(
-    "Premium purchase is coming soon. Payment will be available shortly."
-  );
+
+// ==================================================
+// PREMIUM PURCHASE
+// ==================================================
+
+async function buyPremium(productId) {
+
+  const product =
+    wallpapers.find(
+      wallpaper =>
+        wallpaper.id === productId
+    );
+
+  if (
+    !product ||
+    product.type !== "premium"
+  ) {
+
+    alert("Premium product not found.");
+
+    return;
+  }
+
+
+  try {
+
+    // ----------------------------------------------
+    // LOAD RAZORPAY
+    // ----------------------------------------------
+
+    await loadRazorpay();
+
+
+    // ----------------------------------------------
+    // CREATE ORDER
+    // ----------------------------------------------
+
+    const response =
+      await fetch("/api/create-order", {
+
+        method: "POST",
+
+        headers: {
+          "Content-Type":
+            "application/json"
+        },
+
+        body: JSON.stringify({
+
+          items: [productId]
+
+        })
+
+      });
+
+
+    const data =
+      await response.json();
+
+
+    if (
+      !response.ok ||
+      !data.id ||
+      !data.key
+    ) {
+
+      throw new Error(
+        data.error ||
+        "Unable to create payment order."
+      );
+    }
+
+
+    // ----------------------------------------------
+    // RAZORPAY CHECKOUT
+    // ----------------------------------------------
+
+    const options = {
+
+      key: data.key,
+
+      amount: data.amount,
+
+      currency: data.currency,
+
+      name: "REALNKEO",
+
+      description:
+        product.name,
+
+      order_id: data.id,
+
+
+      theme: {
+        color: "#8b5cf6"
+      },
+
+
+      handler: async function (
+        paymentResponse
+      ) {
+
+        try {
+
+          // ----------------------------------------
+          // VERIFY PAYMENT
+          // ----------------------------------------
+
+          const verifyResponse =
+            await fetch(
+              "/api/verify-payment",
+              {
+
+                method: "POST",
+
+                headers: {
+                  "Content-Type":
+                    "application/json"
+                },
+
+                body: JSON.stringify({
+
+                  razorpay_order_id:
+                    paymentResponse
+                      .razorpay_order_id,
+
+                  razorpay_payment_id:
+                    paymentResponse
+                      .razorpay_payment_id,
+
+                  razorpay_signature:
+                    paymentResponse
+                      .razorpay_signature
+
+                })
+
+              }
+            );
+
+
+          const verifyData =
+            await verifyResponse.json();
+
+
+          if (
+            !verifyResponse.ok ||
+            !verifyData.success
+          ) {
+
+            throw new Error(
+              verifyData.error ||
+              "Payment verification failed."
+            );
+          }
+
+
+          // ----------------------------------------
+          // PAYMENT SUCCESS
+          // ----------------------------------------
+
+          alert(
+            "🎉 Payment successful!\n\nYour premium wallpaper download will start now."
+          );
+
+
+          // ----------------------------------------
+          // DOWNLOAD
+          // ----------------------------------------
+
+          window.location.href =
+            verifyData.downloadUrl;
+
+
+        } catch (error) {
+
+          console.error(
+            "Payment verification error:",
+            error
+          );
+
+          alert(
+            "Payment was received, but the download could not be created.\n\nPlease contact REALNKEO support."
+          );
+        }
+
+      },
+
+
+      modal: {
+
+        ondismiss: function () {
+
+          console.log(
+            "Razorpay checkout closed."
+          );
+
+        }
+
+      }
+
+    };
+
+
+    const razorpay =
+      new window.Razorpay(options);
+
+
+    razorpay.on(
+      "payment.failed",
+      function (response) {
+
+        console.error(
+          "Razorpay payment failed:",
+          response.error
+        );
+
+        alert(
+          "Payment failed.\n\nPlease try again."
+        );
+
+      }
+    );
+
+
+    razorpay.open();
+
+
+  } catch (error) {
+
+    console.error(
+      "Premium purchase error:",
+      error
+    );
+
+    alert(
+      error.message ||
+      "Unable to start payment. Please try again."
+    );
+  }
 }
+
+
+// ==================================================
+// START
+// ==================================================
 
 renderWallpapers();
