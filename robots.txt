@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://realnkeo-wallpapers.onrender.com/sitemap.xml
