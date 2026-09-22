@@ -1,7 +1,7 @@
 const express = require("express");
-const path = require("path");
 const crypto = require("crypto");
 const Razorpay = require("razorpay");
+const { createClient } = require("@supabase/supabase-js");
 require("dotenv").config();
 
 const app = express();
@@ -15,7 +15,7 @@ const catalog = {
   1: {
     name: "Pink Coastal Dream",
     price: 29,
-    file: "IMG_3979.JPG"
+    file: "IMG_3979 2.JPG"
   },
   2: {
     name: "Cyber Warrior",
@@ -63,10 +63,26 @@ const razorpay =
       })
     : null;
 
-// Temporary order storage
-const orders = new Map();
+// -------------------------
+// SUPABASE
+// -------------------------
+const supabase =
+  process.env.SUPABASE_URL &&
+  process.env.SUPABASE_SERVICE_ROLE_KEY
+    ? createClient(
+        process.env.SUPABASE_URL,
+        process.env.SUPABASE_SERVICE_ROLE_KEY,
+        {
+          auth: {
+            autoRefreshToken: false,
+            persistSession: false
+          }
+        }
+      )
+    : null;
 
-// Temporary download tokens
+// Temporary storage
+const orders = new Map();
 const downloads = new Map();
 
 // -------------------------
@@ -80,7 +96,15 @@ app.post("/api/create-order", async (req, res) => {
       });
     }
 
-    const ids = req.body.items || [];
+    if (!supabase) {
+      return res.status(503).json({
+        error: "Supabase is not configured"
+      });
+    }
+
+    const ids = Array.isArray(req.body.items)
+      ? [...new Set(req.body.items.map(Number))]
+      : [];
 
     const products = ids
       .map(id => catalog[id])
@@ -120,6 +144,8 @@ app.post("/api/create-order", async (req, res) => {
     });
 
   } catch (e) {
+    console.error(e);
+
     res.status(500).json({
       error: e.message
     });
@@ -131,6 +157,13 @@ app.post("/api/create-order", async (req, res) => {
 // -------------------------
 app.post("/api/verify-payment", async (req, res) => {
   try {
+    if (!razorpay || !supabase) {
+      return res.status(503).json({
+        success: false,
+        error: "Payment system is not configured"
+      });
+    }
+
     const {
       razorpay_order_id,
       razorpay_payment_id,
@@ -146,6 +179,10 @@ app.post("/api/verify-payment", async (req, res) => {
       });
     }
 
+    // -------------------------
+    // VERIFY SIGNATURE
+    // -------------------------
+
     const body =
       razorpay_order_id +
       "|" +
@@ -159,7 +196,14 @@ app.post("/api/verify-payment", async (req, res) => {
       .update(body)
       .digest("hex");
 
-    if (expected !== razorpay_signature) {
+    if (
+      !razorpay_signature ||
+      expected.length !== razorpay_signature.length ||
+      !crypto.timingSafeEqual(
+        Buffer.from(expected),
+        Buffer.from(razorpay_signature)
+      )
+    ) {
       return res.status(400).json({
         success: false,
         error: "Invalid payment signature"
@@ -167,15 +211,50 @@ app.post("/api/verify-payment", async (req, res) => {
     }
 
     // -------------------------
-    // CREATE TEMP DOWNLOAD TOKEN
+    // VERIFY RAZORPAY ORDER
     // -------------------------
 
-    const token = crypto
-      .randomBytes(32)
-      .toString("hex");
+    const razorpayOrder =
+      await razorpay.orders.fetch(razorpay_order_id);
 
-    const firstProductId = savedOrder.items[0];
-    const product = catalog[firstProductId];
+    if (
+      razorpayOrder.amount !== savedOrder.amount ||
+      razorpayOrder.currency !== "INR"
+    ) {
+      return res.status(400).json({
+        success: false,
+        error: "Payment amount verification failed"
+      });
+    }
+
+    // -------------------------
+    // VERIFY PAYMENT
+    // -------------------------
+
+    const payment =
+      await razorpay.payments.fetch(
+        razorpay_payment_id
+      );
+
+    if (
+      payment.order_id !== razorpay_order_id ||
+      payment.status !== "captured"
+    ) {
+      return res.status(400).json({
+        success: false,
+        error: "Payment was not captured"
+      });
+    }
+
+    // -------------------------
+    // DOWNLOAD TOKEN
+    // -------------------------
+
+    const firstProductId =
+      savedOrder.items[0];
+
+    const product =
+      catalog[firstProductId];
 
     if (!product || !product.file) {
       return res.status(400).json({
@@ -184,11 +263,16 @@ app.post("/api/verify-payment", async (req, res) => {
       });
     }
 
+    const token = crypto
+      .randomBytes(32)
+      .toString("hex");
+
     downloads.set(token, {
       file: product.file,
       expiresAt: Date.now() + 10 * 60 * 1000
     });
 
+    // Remove used order
     orders.delete(razorpay_order_id);
 
     res.json({
@@ -198,6 +282,8 @@ app.post("/api/verify-payment", async (req, res) => {
     });
 
   } catch (e) {
+    console.error(e);
+
     res.status(500).json({
       success: false,
       error: e.message
@@ -208,44 +294,77 @@ app.post("/api/verify-payment", async (req, res) => {
 // -------------------------
 // SECURE DOWNLOAD
 // -------------------------
-app.get("/api/download/:token", (req, res) => {
+app.get("/api/download/:token", async (req, res) => {
+  try {
+    if (!supabase) {
+      return res.status(503).send(
+        "Supabase is not configured."
+      );
+    }
 
-  const token = req.params.token;
-  const data = downloads.get(token);
+    const token = req.params.token;
 
-  if (!data) {
-    return res.status(404).send(`
-      <h2>Download link expired or invalid.</h2>
-      <p>Please contact REALNKEO support.</p>
-    `);
-  }
+    const data = downloads.get(token);
 
-  if (Date.now() > data.expiresAt) {
+    if (!data) {
+      return res.status(404).send(`
+        <html>
+          <body style="font-family:Arial;text-align:center;padding:50px">
+            <h2>Download link expired or invalid.</h2>
+            <p>Please contact REALNKEO support.</p>
+          </body>
+        </html>
+      `);
+    }
+
+    if (Date.now() > data.expiresAt) {
+      downloads.delete(token);
+
+      return res.status(410).send(`
+        <html>
+          <body style="font-family:Arial;text-align:center;padding:50px">
+            <h2>Download link expired.</h2>
+            <p>Please contact REALNKEO support.</p>
+          </body>
+        </html>
+      `);
+    }
+
+    // One-time REALNKEO token
     downloads.delete(token);
 
-    return res.status(410).send(`
-      <h2>Download link expired.</h2>
+    // Create Supabase signed URL
+    const { data: signed, error } =
+      await supabase.storage
+        .from("Wallpapers")
+        .createSignedUrl(
+          data.file,
+          600,
+          {
+            download: true
+          }
+        );
+
+    if (error || !signed?.signedUrl) {
+      console.error(error);
+
+      return res.status(500).send(`
+        <h2>Unable to create download link.</h2>
+        <p>Please contact REALNKEO support.</p>
+      `);
+    }
+
+    // Send user to temporary Supabase download URL
+    res.redirect(signed.signedUrl);
+
+  } catch (e) {
+    console.error(e);
+
+    res.status(500).send(`
+      <h2>Download error.</h2>
       <p>Please contact REALNKEO support.</p>
     `);
   }
-
-  // One-time download
-  downloads.delete(token);
-
-  const filePath = path.join(
-    __dirname,
-    data.file
-  );
-
-  res.download(
-    filePath,
-    data.file,
-    err => {
-      if (err) {
-        console.error(err);
-      }
-    }
-  );
 });
 
 // -------------------------
@@ -253,7 +372,12 @@ app.get("/api/download/:token", (req, res) => {
 // -------------------------
 app.use(express.static(__dirname));
 
+// -------------------------
+// START SERVER
+// -------------------------
 app.listen(
   process.env.PORT || 3000,
-  () => console.log("REALNKEO store running")
+  () => {
+    console.log("REALNKEO store running");
+  }
 );
