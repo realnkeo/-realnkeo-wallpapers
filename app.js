@@ -1,105 +1,202 @@
 const wallpapers = [
   {
     id: 1,
-    name: "Pink Coastal Dream",
-    category: "mobile",
-    tag: "HD • Mobile • Free",
-    image: "IMG_3979.JPG",
+    name: "Water Fire Goddess",
+    category: "anime",
+    tag: "4K • Anime • Free",
+    image: "IMG_4547.jpeg",
     type: "free"
   },
 
   {
     id: 2,
-    name: "Cyber Warrior",
-    category: "gaming",
-    tag: "4K • Gaming • Free",
-    c1: "#bd7cff",
-    c2: "#21103a",
+    name: "Flame Blossom Goddess",
+    category: "anime",
+    tag: "4K • Fantasy • Free",
+    image: "IMG_4549.jpeg",
     type: "free"
   },
 
   {
     id: 3,
-    name: "Purple Dream",
-    category: "mobile",
-    tag: "4K • Mobile • Free",
-    c1: "#e4a4ff",
-    c2: "#32165b",
+    name: "Dark Water Fire Demon",
+    category: "fantasy",
+    tag: "4K • Fantasy • Free",
+    image: "IMG_4551.jpeg",
     type: "free"
   },
 
   {
     id: 4,
-    name: "Anime Night",
-    category: "anime",
-    tag: "4K • Anime • Free",
-    c1: "#7bd6ff",
-    c2: "#101d3a",
+    name: "Water Fire Angel",
+    category: "fantasy",
+    tag: "4K • Fantasy • Free",
+    image: "IMG_4544.jpeg",
     type: "free"
   },
 
   {
     id: 5,
-    name: "Moon Forest",
-    category: "nature",
-    tag: "4K • Nature • Free",
-    c1: "#8cffd0",
-    c2: "#102f2a",
+    name: "Water Fire Warrior",
+    category: "anime",
+    tag: "4K • Warrior • Free",
+    image: "IMG_4545.jpeg",
     type: "free"
   },
 
   {
     id: 6,
-    name: "Neon Battle",
-    category: "gaming",
-    tag: "4K • Gaming • Free",
-    c1: "#ff5bd8",
-    c2: "#36102e",
-    type: "free"
+    name: "Pink Snow Princess",
+    category: "anime",
+    tag: "4K • Anime • Premium",
+    image: "IMG_4557.jpeg",
+    type: "premium",
+    price: 29
   },
 
   {
     id: 7,
-    name: "Sakura Sky",
-    category: "anime",
-    tag: "4K • Anime • Free",
-    c1: "#ffb5e6",
-    c2: "#3d1738",
-    type: "free"
+    name: "Winter Lavender Princess",
+    category: "fantasy",
+    tag: "4K • Fantasy • Premium",
+    image: "IMG_4558.jpeg",
+    type: "premium",
+    price: 29
   },
 
   {
     id: 8,
-    name: "Cosmic Earth",
-    category: "nature",
-    tag: "4K • Nature • Free",
-    c1: "#70a7ff",
-    c2: "#111b3c",
-    type: "free"
+    name: "Purple Snow Queen",
+    category: "anime",
+    tag: "4K • Anime • Premium",
+    image: "IMG_4560.jpeg",
+    type: "premium",
+    price: 29
   },
 
   {
     id: 9,
-    name: "Dark Gaming",
-    category: "gaming",
-    tag: "HD • Gaming • Free",
-    c1: "#ff6b6b",
-    c2: "#331314",
-    type: "free"
+    name: "Golden Snow Queen",
+    category: "fantasy",
+    tag: "4K • Fantasy • Premium",
+    image: "IMG_4559.jpeg",
+    type: "premium",
+    price: 29
   },
 
   {
     id: 10,
-    name: "Purple Princess Premium",
+    name: "Pink Winter Warrior",
+    category: "anime",
+    tag: "4K • Warrior • Premium",
+    image: "IMG_4561.jpeg",
+    type: "premium",
+    price: 29
+  },
+
+  {
+    id: 11,
+    name: "Blindfold Coffee Angel",
+    category: "fantasy",
+    tag: "4K • Fantasy • Premium",
+    image: "IMG_4552.jpeg",
+    type: "premium",
+    price: 29
+  },
+
+  {
+    id: 12,
+    name: "Pink Fantasy Coffee Girl",
     category: "anime",
     tag: "4K • Anime • Premium",
-    image: "IMG_4285.JPG",
+    image: "IMG_4554.jpeg",
+    type: "premium",
+    price: 29
+  },
+
+  {
+    id: 13,
+    name: "Blue Feather Goddess",
+    category: "fantasy",
+    tag: "4K • Fantasy • Premium",
+    image: "IMG_4553.jpeg",
+    type: "premium",
+    price: 29
+  },
+
+  {
+    id: 14,
+    name: "Dark Feather Queen",
+    category: "fantasy",
+    tag: "4K • Fantasy • Premium",
+    image: "IMG_4555.jpeg",
+    type: "premium",
+    price: 29
+  },
+
+  {
+    id: 15,
+    name: "Lavender Coffee Princess",
+    category: "anime",
+    tag: "4K • Anime • Premium",
+    image: "IMG_4556.jpeg",
+    type: "premium",
+    price: 29
+  },
+
+  {
+    id: 16,
+    name: "Lavender Flower Princess",
+    category: "fantasy",
+    tag: "4K • Fantasy • Premium",
+    image: "IMG_4500.jpeg",
+    type: "premium",
+    price: 29
+  },
+
+  {
+    id: 17,
+    name: "Pink Sunset Flower",
+    category: "anime",
+    tag: "4K • Anime • Premium",
+    image: "IMG_4508.jpeg",
+    type: "premium",
+    price: 29
+  },
+
+  {
+    id: 18,
+    name: "Golden Sunset Flower",
+    category: "fantasy",
+    tag: "4K • Fantasy • Premium",
+    image: "IMG_4510.jpeg",
+    type: "premium",
+    price: 29
+  },
+
+  {
+    id: 19,
+    name: "Dark Flower Queen",
+    category: "fantasy",
+    tag: "4K • Fantasy • Premium",
+    image: "IMG_4512.jpeg",
+    type: "premium",
+    price: 29
+  },
+
+  {
+    id: 20,
+    name: "Sunset Meadow Queen",
+    category: "fantasy",
+    tag: "4K • Fantasy • Premium",
+    image: "IMG_4520.jpeg",
     type: "premium",
     price: 29
   }
 ];
 
 let currentCategory = "all";
+
 
 // ==================================================
 // LOAD RAZORPAY CHECKOUT
@@ -115,13 +212,16 @@ function loadRazorpay() {
 
     const script = document.createElement("script");
 
-    script.src = "https://checkout.razorpay.com/v1/checkout.js";
+    script.src =
+      "https://checkout.razorpay.com/v1/checkout.js";
 
     script.onload = () => resolve();
 
     script.onerror = () => {
       reject(
-        new Error("Unable to load Razorpay Checkout.")
+        new Error(
+          "Unable to load Razorpay Checkout."
+        )
       );
     };
 
@@ -150,6 +250,8 @@ function renderWallpapers() {
 
   let list = wallpapers;
 
+
+  // CATEGORY FILTER
   if (currentCategory !== "all") {
 
     list = list.filter(
@@ -158,6 +260,8 @@ function renderWallpapers() {
     );
   }
 
+
+  // SEARCH FILTER
   if (searchText !== "") {
 
     list = list.filter(
@@ -176,6 +280,8 @@ function renderWallpapers() {
     );
   }
 
+
+  // NO RESULTS
   if (list.length === 0) {
 
     container.innerHTML = "";
@@ -185,12 +291,16 @@ function renderWallpapers() {
     return;
   }
 
+
   noResults.style.display = "none";
 
+
+  // CREATE CARDS
   container.innerHTML =
     list.map(wallpaper => {
 
       let visual;
+
 
       // --------------------------------------------
       // IMAGE
@@ -230,11 +340,13 @@ function renderWallpapers() {
 
 
       // --------------------------------------------
-      // BUTTON
+      // ACTION BUTTON
       // --------------------------------------------
 
       let actionButton;
 
+
+      // PREMIUM
       if (wallpaper.type === "premium") {
 
         actionButton = `
@@ -246,7 +358,11 @@ function renderWallpapers() {
           </button>
         `;
 
-      } else if (wallpaper.image) {
+      }
+
+
+      // FREE WITH IMAGE
+      else if (wallpaper.image) {
 
         actionButton = `
           <a
@@ -263,7 +379,11 @@ function renderWallpapers() {
           </a>
         `;
 
-      } else {
+      }
+
+
+      // FREE WITHOUT IMAGE
+      else {
 
         actionButton = `
           <button
@@ -303,6 +423,10 @@ function renderWallpapers() {
           : "";
 
 
+      // --------------------------------------------
+      // CARD
+      // --------------------------------------------
+
       return `
         <article
           class="card"
@@ -335,15 +459,19 @@ function renderWallpapers() {
 
 
 // ==================================================
-// FILTER
+// CATEGORY FILTER
 // ==================================================
 
 function filterWallpapers(category) {
 
   currentCategory = category;
 
-  document.getElementById("filter").value =
-    category;
+  const filter =
+    document.getElementById("filter");
+
+  if (filter) {
+    filter.value = category;
+  }
 
   renderWallpapers();
 }
@@ -359,7 +487,7 @@ function searchWallpapers() {
 
 
 // ==================================================
-// FREE DOWNLOAD COMING SOON
+// FREE DOWNLOAD FALLBACK
 // ==================================================
 
 function comingSoon() {
@@ -382,12 +510,15 @@ async function buyPremium(productId) {
         wallpaper.id === productId
     );
 
+
   if (
     !product ||
     product.type !== "premium"
   ) {
 
-    alert("Premium product not found.");
+    alert(
+      "Premium product not found."
+    );
 
     return;
   }
@@ -407,22 +538,21 @@ async function buyPremium(productId) {
     // ----------------------------------------------
 
     const response =
-      await fetch("/api/create-order", {
+      await fetch(
+        "/api/create-order",
+        {
+          method: "POST",
 
-        method: "POST",
+          headers: {
+            "Content-Type":
+              "application/json"
+          },
 
-        headers: {
-          "Content-Type":
-            "application/json"
-        },
-
-        body: JSON.stringify({
-
-          items: [productId]
-
-        })
-
-      });
+          body: JSON.stringify({
+            items: [productId]
+          })
+        }
+      );
 
 
     const data =
@@ -443,7 +573,7 @@ async function buyPremium(productId) {
 
 
     // ----------------------------------------------
-    // RAZORPAY CHECKOUT
+    // RAZORPAY OPTIONS
     // ----------------------------------------------
 
     const options = {
@@ -467,99 +597,103 @@ async function buyPremium(productId) {
       },
 
 
-      handler: async function (
-        paymentResponse
-      ) {
+      // --------------------------------------------
+      // PAYMENT SUCCESS
+      // --------------------------------------------
 
-        try {
+      handler:
+        async function(paymentResponse) {
 
-          // ----------------------------------------
-          // VERIFY PAYMENT
-          // ----------------------------------------
+          try {
 
-          const verifyResponse =
-            await fetch(
-              "/api/verify-payment",
-              {
+            const verifyResponse =
+              await fetch(
+                "/api/verify-payment",
+                {
 
-                method: "POST",
+                  method: "POST",
 
-                headers: {
-                  "Content-Type":
-                    "application/json"
-                },
+                  headers: {
+                    "Content-Type":
+                      "application/json"
+                  },
 
-                body: JSON.stringify({
+                  body: JSON.stringify({
 
-                  razorpay_order_id:
-                    paymentResponse
-                      .razorpay_order_id,
+                    razorpay_order_id:
+                      paymentResponse
+                        .razorpay_order_id,
 
-                  razorpay_payment_id:
-                    paymentResponse
-                      .razorpay_payment_id,
+                    razorpay_payment_id:
+                      paymentResponse
+                        .razorpay_payment_id,
 
-                  razorpay_signature:
-                    paymentResponse
-                      .razorpay_signature
+                    razorpay_signature:
+                      paymentResponse
+                        .razorpay_signature
 
-                })
+                  })
 
-              }
+                }
+              );
+
+
+            const verifyData =
+              await verifyResponse.json();
+
+
+            if (
+              !verifyResponse.ok ||
+              !verifyData.success
+            ) {
+
+              throw new Error(
+                verifyData.error ||
+                "Payment verification failed."
+              );
+            }
+
+
+            // --------------------------------------
+            // SUCCESS
+            // --------------------------------------
+
+            alert(
+              "🎉 Payment successful!\n\nYour premium wallpaper download will start now."
             );
 
 
-          const verifyData =
-            await verifyResponse.json();
+            // --------------------------------------
+            // DOWNLOAD
+            // --------------------------------------
+
+            window.location.href =
+              verifyData.downloadUrl;
 
 
-          if (
-            !verifyResponse.ok ||
-            !verifyData.success
-          ) {
+          } catch (error) {
 
-            throw new Error(
-              verifyData.error ||
-              "Payment verification failed."
+            console.error(
+              "Payment verification error:",
+              error
+            );
+
+
+            alert(
+              "Payment was received, but the download could not be created.\n\nPlease contact REALNKEO support."
             );
           }
 
-
-          // ----------------------------------------
-          // PAYMENT SUCCESS
-          // ----------------------------------------
-
-          alert(
-            "🎉 Payment successful!\n\nYour premium wallpaper download will start now."
-          );
+        },
 
 
-          // ----------------------------------------
-          // DOWNLOAD
-          // ----------------------------------------
-
-          window.location.href =
-            verifyData.downloadUrl;
-
-
-        } catch (error) {
-
-          console.error(
-            "Payment verification error:",
-            error
-          );
-
-          alert(
-            "Payment was received, but the download could not be created.\n\nPlease contact REALNKEO support."
-          );
-        }
-
-      },
-
+      // --------------------------------------------
+      // CHECKOUT CLOSED
+      // --------------------------------------------
 
       modal: {
 
-        ondismiss: function () {
+        ondismiss: function() {
 
           console.log(
             "Razorpay checkout closed."
@@ -572,18 +706,27 @@ async function buyPremium(productId) {
     };
 
 
+    // ----------------------------------------------
+    // OPEN RAZORPAY
+    // ----------------------------------------------
+
     const razorpay =
       new window.Razorpay(options);
 
 
+    // ----------------------------------------------
+    // PAYMENT FAILED
+    // ----------------------------------------------
+
     razorpay.on(
       "payment.failed",
-      function (response) {
+      function(response) {
 
         console.error(
           "Razorpay payment failed:",
           response.error
         );
+
 
         alert(
           "Payment failed.\n\nPlease try again."
@@ -603,6 +746,7 @@ async function buyPremium(productId) {
       error
     );
 
+
     alert(
       error.message ||
       "Unable to start payment. Please try again."
@@ -612,7 +756,7 @@ async function buyPremium(productId) {
 
 
 // ==================================================
-// START
+// START WEBSITE
 // ==================================================
 
 renderWallpapers();
