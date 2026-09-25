@@ -192,6 +192,55 @@ const wallpapers = [
     image: "IMG_4520.jpeg",
     type: "premium",
     price: 29
+  },
+
+  // ==================================================
+  // NEW 5 FREE NURSE WALLPAPERS
+  // ==================================================
+
+  {
+    id: 21,
+    name: "Pink Nurse Angel",
+    category: "anime",
+    tag: "4K • Anime • Free",
+    image: "IMG_4621.jpeg",
+    type: "free"
+  },
+
+  {
+    id: 22,
+    name: "Rose Nurse Princess",
+    category: "anime",
+    tag: "4K • Anime • Free",
+    image: "IMG_4623.jpeg",
+    type: "free"
+  },
+
+  {
+    id: 23,
+    name: "Blindfold Nurse",
+    category: "fantasy",
+    tag: "4K • Fantasy • Free",
+    image: "IMG_4624.jpeg",
+    type: "free"
+  },
+
+  {
+    id: 24,
+    name: "White Hair Nurse",
+    category: "anime",
+    tag: "4K • Anime • Free",
+    image: "IMG_4625.jpeg",
+    type: "free"
+  },
+
+  {
+    id: 25,
+    name: "Purple Nurse Queen",
+    category: "fantasy",
+    tag: "4K • Fantasy • Free",
+    image: "IMG_4626.jpeg",
+    type: "free"
   }
 ];
 
@@ -302,10 +351,7 @@ function renderWallpapers() {
       let visual;
 
 
-      // --------------------------------------------
       // IMAGE
-      // --------------------------------------------
-
       if (wallpaper.image) {
 
         visual = `
@@ -339,10 +385,7 @@ function renderWallpapers() {
       }
 
 
-      // --------------------------------------------
       // ACTION BUTTON
-      // --------------------------------------------
-
       let actionButton;
 
 
@@ -396,10 +439,7 @@ function renderWallpapers() {
       }
 
 
-      // --------------------------------------------
       // PREMIUM BADGE
-      // --------------------------------------------
-
       const premiumBadge =
         wallpaper.type === "premium"
           ? `
@@ -423,10 +463,7 @@ function renderWallpapers() {
           : "";
 
 
-      // --------------------------------------------
       // CARD
-      // --------------------------------------------
-
       return `
         <article
           class="card"
@@ -526,17 +563,11 @@ async function buyPremium(productId) {
 
   try {
 
-    // ----------------------------------------------
     // LOAD RAZORPAY
-    // ----------------------------------------------
-
     await loadRazorpay();
 
 
-    // ----------------------------------------------
     // CREATE ORDER
-    // ----------------------------------------------
-
     const response =
       await fetch(
         "/api/create-order",
@@ -572,10 +603,7 @@ async function buyPremium(productId) {
     }
 
 
-    // ----------------------------------------------
     // RAZORPAY OPTIONS
-    // ----------------------------------------------
-
     const options = {
 
       key: data.key,
@@ -597,10 +625,7 @@ async function buyPremium(productId) {
       },
 
 
-      // --------------------------------------------
       // PAYMENT SUCCESS
-      // --------------------------------------------
-
       handler:
         async function(paymentResponse) {
 
@@ -654,18 +679,10 @@ async function buyPremium(productId) {
             }
 
 
-            // --------------------------------------
-            // SUCCESS
-            // --------------------------------------
-
             alert(
               "🎉 Payment successful!\n\nYour premium wallpaper download will start now."
             );
 
-
-            // --------------------------------------
-            // DOWNLOAD
-            // --------------------------------------
 
             window.location.href =
               verifyData.downloadUrl;
@@ -687,10 +704,7 @@ async function buyPremium(productId) {
         },
 
 
-      // --------------------------------------------
       // CHECKOUT CLOSED
-      // --------------------------------------------
-
       modal: {
 
         ondismiss: function() {
@@ -706,18 +720,12 @@ async function buyPremium(productId) {
     };
 
 
-    // ----------------------------------------------
     // OPEN RAZORPAY
-    // ----------------------------------------------
-
     const razorpay =
       new window.Razorpay(options);
 
 
-    // ----------------------------------------------
     // PAYMENT FAILED
-    // ----------------------------------------------
-
     razorpay.on(
       "payment.failed",
       function(response) {
